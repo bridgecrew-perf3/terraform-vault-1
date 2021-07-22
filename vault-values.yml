@@ -1,0 +1,54 @@
+# Vault Helm Chart Value Overrides
+
+server:
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 256Mi
+      cpu: 250m
+
+  # For HA configuration and because we need to manually init the vault,
+  # we need to define custom readiness/liveness Probe settings
+  readinessProbe:
+    enabled: true
+    path: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
+  livenessProbe:
+    enabled: true
+    path: "/v1/sys/health?standbyok=true"
+    initialDelaySeconds: 60
+
+  extraEnvironmentVars:
+    GOOGLE_APPLICATION_CREDENTIALS: /vault/userconfig/vault-sa-auth/key.json
+  extraVolumes:
+  - type: secret
+    name: vault-sa-auth
+    path: "/vault/userconfig"
+
+  standalone:
+    enabled: false
+
+  # Run Vault in "HA" mode.
+  ha:
+    enabled: true
+    replicas: 3
+    config: |
+        ui = true
+
+        listener "tcp" {
+          tls_disable = 1
+          address = "[::]:8200"
+          cluster_address = "[::]:8201"
+        }
+
+        storage "gcs" {
+        bucket     = "japneet-arctiq-demo-vault-data"
+        }
+
+        seal "gcpckms" {
+          project     = "japneet-arctiq-demo"
+          region      = "global"
+          key_ring    = "vault-unseal-keyring"
+          crypto_key  = "vault-unseal-key"
+        }

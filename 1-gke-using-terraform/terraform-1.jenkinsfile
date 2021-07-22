@@ -1,19 +1,25 @@
 pipeline {
   agent any
+  environment {
+      GOOGLE_CREDENTIALS = credentials('terraform-vault-sa-auth')
+    }
     stages {
-    stage('fetch_latest_code') {
+    stage('Checkout') {
       steps {
-        git url: 'https://github.com/supreet19/terraform-pipeline.git'
+        git url: 'https://github.com/japneet-sahni/terraform-vault.git'
       }
     }
 
-    stage('TF Init&Plan') {
-      steps {
-        withAWS(credentials: 'japneet-aws') {
+    stage('TF Init') {
+          sh 'cd 1-gke-using-terraform'
+          sh 'echo $GOOGLE_CREDENTIALS'
+          sh 'terraform fmt'
           sh 'terraform init'
+          sh 'terraform validate'
+    }
+
+    stage('TF Plan') {
           sh 'terraform plan'
-        }
-      }
     }
 
     stage('Approval') {
@@ -25,11 +31,7 @@ pipeline {
     }
 
     stage('TF Apply') {
-      steps {
-        withAWS(credentials: 'japneet-aws') {
           sh 'terraform apply -auto-approve'
-        }
-      }
     }
 
   }

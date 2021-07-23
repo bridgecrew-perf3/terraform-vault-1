@@ -13,7 +13,7 @@ pipeline {
     stage('TF Init') {
       steps {
         dir('1-gke-using-terraform') {
-          sh 'echo $GOOGLE_CREDENTIALS | base64 -d > ./serviceaccount-auth.json'
+          sh 'echo $GOOGLE_CREDENTIALS > ./serviceaccount-auth.json'
           sh 'terraform fmt'
           sh 'terraform init'
           sh 'terraform validate'

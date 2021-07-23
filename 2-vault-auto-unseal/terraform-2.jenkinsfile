@@ -33,7 +33,7 @@ pipeline {
       }  
     }
 
-    stage('Helm Deploy') {
+    stage('Vault Status') {
       steps {
         dir('2-vault-auto-unseal') {
           sh 'sleep 60'

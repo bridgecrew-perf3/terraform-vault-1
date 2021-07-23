@@ -11,15 +11,22 @@ pipeline {
     }
 
     stage('TF Init') {
-          sh 'cd 1-gke-using-terraform'
-          sh 'echo $GOOGLE_CREDENTIALS'
+      steps {
+        dir('1-gke-using-terraform') {
+          sh 'echo $GOOGLE_CREDENTIALS | base64 -d > ./serviceaccount-auth.json'
           sh 'terraform fmt'
           sh 'terraform init'
           sh 'terraform validate'
+        }  
+      }
     }
 
     stage('TF Plan') {
-          sh 'terraform plan'
+      steps {
+        dir('1-gke-using-terraform') {
+          sh 'terraform plan -out myplan'
+        }
+      } 
     }
 
     stage('Approval') {
@@ -31,7 +38,11 @@ pipeline {
     }
 
     stage('TF Apply') {
-          sh 'terraform apply -auto-approve'
+      steps {
+        dir('1-gke-using-terraform') {
+          sh 'terraform apply -input=false myplan'
+        }
+      }  
     }
 
   }

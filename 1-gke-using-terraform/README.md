@@ -1,6 +1,11 @@
 # Task 1
 ## Create GKE Cluster using Terraform
 
+- GKE cluster is created using Terraform
+- Service Account is used for Terraform execution instead of user application credentials.
+- GCS is used as Terraform backend.
+- Managed Node Pool is used instead of default pool with 1 worker node per zone.
+
 ### Prerequisites
 
 ```bash
@@ -41,13 +46,13 @@ gsutil mb --pap=enforced -b on gs://$GCS_TF_BUCKET_NAME
 
 ```
 
-##Execution
+### Execution
 - In Jenkins
     - Setup a new pipeline job named "1-gke-using-terraform" with pipeline script as SCM from https://github.com/japneet-sahni/terraform-vault.git and jenkinsfile as 1-gke-using-terraform/terraform-1.jenkinsfile
     - Create a new secret text credential in Jenkins using base64 encoded value of serviceaccount-auth.json
     - You are all set, just click on "Build Now"
-    - Before applying, the user is requested with input to further proceed or not.
+    - Before *terraform apply*, the user is requested with input to further proceed or not.
 
-##Output
-gke_cluster_name = "japneet-arctiq-demo-cluster"
+### Terraform Outputs
+gke_cluster_name = "japneet-demo-cluster"
 region = "us-central1"

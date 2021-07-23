@@ -6,9 +6,9 @@ variable "region" {
   description = "region"
 }
 
-variable "gke_worker_nodes" {
+variable "gke_worker_nodes_per_zone" {
   default     = 1
-  description = "number of gke worker nodes"
+  description = "number of gke worker nodes per zone"
 }
 
 variable "machine_type" {

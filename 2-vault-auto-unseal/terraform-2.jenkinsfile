@@ -1,0 +1,46 @@
+pipeline {
+  agent any
+  environment {
+      GOOGLE_CREDENTIALS = credentials('terraform-vault-sa-auth')
+    }
+    stages {
+
+    stage('Use GKE Cluster Credentials') {
+      steps {
+        dir('1-gke-using-terraform') {
+          sh 'echo $GOOGLE_CREDENTIALS | base64 -di > serviceaccount-auth.json'
+          sh 'terraform init'
+          sh 'gcloud container clusters get-credentials $(terraform output -raw gke_cluster_name) --region $(terraform output -raw region)'
+        }  
+      }
+    }
+
+    stage('Create K8S secret') {
+      steps {
+        dir('1-gke-using-terraform') {
+          sh 'kubectl create secret generic vault-sa-auth --from-file=serviceaccount-auth.json --dry-run -o yaml > serviceaccount-auth.yml'
+          sh 'kubectl apply -f serviceaccount-auth.yml'
+        }
+      } 
+    }
+
+    stage('Helm Deploy') {
+      steps {
+        dir('2-vault-auto-unseal') {
+          sh 'pwd'
+          sh 'helm upgrade --install vault hashicorp/vault -f vault-values.yml'
+        }
+      }  
+    }
+
+    stage('Helm Deploy') {
+      steps {
+        dir('2-vault-auto-unseal') {
+          sh 'sleep 60'
+          sh 'kubectl exec vault-0 -- vault status'
+        }
+      }  
+    }
+
+  }
+}

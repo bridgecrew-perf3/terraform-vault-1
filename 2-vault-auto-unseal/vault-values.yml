@@ -20,7 +20,7 @@ server:
     initialDelaySeconds: 60
 
   extraEnvironmentVars:
-    GOOGLE_APPLICATION_CREDENTIALS: /vault/userconfig/vault-sa-auth/key.json
+    GOOGLE_APPLICATION_CREDENTIALS: /vault/userconfig/vault-sa-auth/serviceaccount-auth.json
   extraVolumes:
   - type: secret
     name: vault-sa-auth
@@ -44,6 +44,7 @@ server:
 
         storage "gcs" {
         bucket     = "japneet-arctiq-demo-vault-data"
+        ha_enabled = true
         }
 
         seal "gcpckms" {
@@ -52,3 +53,9 @@ server:
           key_ring    = "vault-unseal-keyring"
           crypto_key  = "vault-unseal-key"
         }
+
+ui:
+  enabled: true
+  serviceType: "LoadBalancer"
+  serviceNodePort: null
+  externalPort: 8200

@@ -10,6 +10,7 @@ pipeline {
         dir('1-gke-using-terraform') {
           sh 'echo $GOOGLE_CREDENTIALS | base64 -di > serviceaccount-auth.json'
           sh 'terraform init'
+          sh 'gcloud auth activate-service-account --key-file=serviceaccount-auth.json'
           sh 'gcloud container clusters get-credentials $(terraform output -raw gke_cluster_name) --region $(terraform output -raw region)'
         }  
       }
@@ -27,7 +28,7 @@ pipeline {
     stage('Helm Deploy') {
       steps {
         dir('2-vault-auto-unseal') {
-          sh 'pwd'
+          sh 'helm repo add hashicorp https://helm.releases.hashicorp.com'
           sh 'helm upgrade --install vault hashicorp/vault -f vault-values.yml'
         }
       }  

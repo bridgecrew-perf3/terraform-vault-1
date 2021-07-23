@@ -4,11 +4,6 @@ pipeline {
       GOOGLE_CREDENTIALS = credentials('terraform-vault-sa-auth')
     }
     stages {
-    stage('Checkout') {
-      steps {
-        git url: 'https://github.com/japneet-sahni/terraform-vault.git'
-      }
-    }
 
     stage('TF Init') {
       steps {

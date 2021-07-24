@@ -4,6 +4,8 @@ pipeline {
       VAULT_ADDR = "${VAULT_ADDR}"
       VAULT_TOKEN = "${VAULT_TOKEN}"
       GOOGLE_CREDENTIALS = credentials('terraform-vault-sa-auth')
+      AWS_ACCESS_KEY = credentials('aws_access_key')
+      AWS_SECRET_KEY = credentials('aws_secret_key')
     }
     stages {
 
@@ -23,7 +25,7 @@ pipeline {
       steps {
         dir('3-vault-dynamic-secrets/create-dynamic-secrets') {
           withAWS(credentials: 'japneet-iam') {
-            sh 'terraform plan -out myplan'
+            sh 'terraform plan -out myplan -var aws_access_key=$AWS_ACCESS_KEY -var aws_secret_key=$AWS_SECRET_KEY'
           }
         }  
       }

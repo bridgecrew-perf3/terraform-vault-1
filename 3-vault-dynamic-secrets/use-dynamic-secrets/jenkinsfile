@@ -17,18 +17,10 @@ pipeline {
       }
     }
 
-    stage('TF Plan') {
-      steps {
-        dir('3-vault-dynamic-secrets/use-dynamic-secrets') {
-            sh 'terraform plan -out myplan'
-        }  
-      }
-    }
-
     stage('TF Apply') {
       steps {
         dir('3-vault-dynamic-secrets/use-dynamic-secrets') {
-            sh 'terraform apply -input=false myplan'
+            sh 'terraform apply -auto-approve'
         }  
       }
     }

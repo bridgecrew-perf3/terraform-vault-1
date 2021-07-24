@@ -68,7 +68,7 @@ command terminated with exit code 2
 
 ### Next Steps from CLI
 ```bash
-#Initialize the 
+#Initialize the vault. The vault will be automatically be unsealed using gcpckms
 kubectl exec vault-0 -- vault operator init -format=json > recover_keys.json
 Key                      Value
 ---                      -----

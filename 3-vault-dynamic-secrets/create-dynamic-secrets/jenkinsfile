@@ -23,7 +23,6 @@ pipeline {
       steps {
         dir('3-vault-dynmic-secrets/create-dynamic-secrets') {
           withAWS(credentials: 'japneet-iam') {
-            sh 'terraform state list'
             sh 'terraform plan -out myplan'
           }
         }  

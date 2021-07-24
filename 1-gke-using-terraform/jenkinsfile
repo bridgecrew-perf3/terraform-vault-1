@@ -19,7 +19,6 @@ pipeline {
     stage('TF Plan') {
       steps {
         dir('1-gke-using-terraform') {
-          sh 'terraform state list'
           sh 'terraform plan -out myplan'
         }
       } 

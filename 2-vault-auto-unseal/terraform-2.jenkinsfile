@@ -37,11 +37,25 @@ pipeline {
     stage('Vault Status') {
       steps {
         dir('2-vault-auto-unseal') {
-          sh 'sleep 60'
-          sh 'kubectl exec vault-0 -- vault status'
+          script {
+            try {
+              sh 'sleep 60'
+              sh 'kubectl exec vault-0 -- vault status'
+            } catch (err) {
+              echo err.getMessage()
+              echo "Vault not initialized, continuing"
+            }
         }
       }  
     }
 
+    stage('Vault UI URL') {
+      steps {
+        dir('2-vault-auto-unseal') {
+          sh 'LOADBALANCER_IP=$(kubectl get svc vault-ui -o jsonpath="{range .items[*]}{.status.loadBalancer.ingress[0].ip}")'
+          sh 'echo "Vault UI URL --> http://$LOADBALANCER_IP:8200/"'
+        }
+      }  
+    }
   }
 }

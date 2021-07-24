@@ -1,0 +1,36 @@
+pipeline {
+  agent any
+  environment {
+      // VAULT_ADDR = "${VAULT_ADDR}"
+      // VAULT_TOKEN = "${VAULT_TOKEN}"
+      GOOGLE_CREDENTIALS = credentials('terraform-vault-sa-auth')
+    }
+    stages {
+
+    stage('TF Init') {
+      steps {
+        dir('3-vault-dynamic-secrets/use-dynamic-secrets') {
+            sh 'echo $GOOGLE_CREDENTIALS | base64 -di > serviceaccount-auth.json'
+            sh 'terraform init'
+            sh 'terraform validate'
+        }  
+      }
+    }
+
+    stage('TF Plan') {
+      steps {
+        dir('3-vault-dynamic-secrets/use-dynamic-secrets') {
+            sh 'terraform plan -out myplan'
+        }  
+      }
+    }
+
+    stage('TF Apply') {
+      steps {
+        dir('3-vault-dynamic-secrets/use-dynamic-secrets') {
+            sh 'terraform apply -input=false myplan'
+        }  
+      }
+    }
+  }
+}

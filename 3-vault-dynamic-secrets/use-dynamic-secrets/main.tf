@@ -1,16 +1,9 @@
-terraform {
-  backend "gcs" {
-    credentials = "serviceaccount-auth.json"
-    bucket      = "terraform-state-japneet-arctiq"
-    prefix      = "3b-use-dynamic-secrets"
-  }
-}
-
 data "terraform_remote_state" "admin" {
-  backend = "local"
+  backend = "gcs"
 
   config = {
-    path = var.path
+    bucket      = "terraform-state-japneet-arctiq"
+    prefix      = "3a-create-dynamic-secrets"
   }
 }
 
@@ -19,36 +12,30 @@ data "vault_aws_access_credentials" "creds" {
   role    = data.terraform_remote_state.admin.outputs.role
 }
 
+#This will generate new IAM user using vault dynamic secrets
 provider "aws" {
-  region     = var.region
+  region     = "us-east-1"
   access_key = data.vault_aws_access_credentials.creds.access_key
   secret_key = data.vault_aws_access_credentials.creds.secret_key
 }
 
-data "aws_ami" "ubuntu" {
+#Fetch latest amzn2 ami
+data "aws_ami" "ami" {
+  owners = ["amazon"]
   most_recent = true
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-*"]
+    values = ["amzn2-ami-hvm-*-x86_64-ebs"]
   }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  owners = ["099720109477"] # Canonical
 }
 
 # Create AWS EC2 Instance
-resource "aws_instance" "main" {
-  ami           = data.aws_ami.ubuntu.id
+resource "aws_instance" "test" {
+  ami           = data.aws_ami.ami.id
   instance_type = "t2.nano"
 
   tags = {
-    Name  = var.name
-    TTL   = var.ttl
-    owner = "${var.name}-guide"
+    Name  = test
   }
 }

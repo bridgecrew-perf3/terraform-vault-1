@@ -9,7 +9,7 @@ pipeline {
 
     stage('TF Init') {
       steps {
-        dir('3-vault-dynmic-secrets/create-dynamic-secrets') {
+        dir('3-vault-dynamic-secrets/create-dynamic-secrets') {
           withAWS(credentials: 'japneet-iam') {
             sh 'echo $GOOGLE_CREDENTIALS | base64 -di > serviceaccount-auth.json'
             sh 'terraform init'
@@ -21,7 +21,7 @@ pipeline {
 
     stage('TF Plan') {
       steps {
-        dir('3-vault-dynmic-secrets/create-dynamic-secrets') {
+        dir('3-vault-dynamic-secrets/create-dynamic-secrets') {
           withAWS(credentials: 'japneet-iam') {
             sh 'terraform plan -out myplan'
           }
@@ -39,7 +39,7 @@ pipeline {
 
     stage('TF Apply') {
       steps {
-        dir('3-vault-dynmic-secrets/create-dynamic-secrets') {
+        dir('3-vault-dynamic-secrets/create-dynamic-secrets') {
           withAWS(credentials: 'japneet-iam') {
             sh 'terraform apply -input=false myplan'
           }

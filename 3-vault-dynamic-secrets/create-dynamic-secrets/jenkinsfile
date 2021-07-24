@@ -1,8 +1,8 @@
 pipeline {
   agent any
   environment {
-      VAULT_ADDR = '$VAULT_ADDR' 
-      VAULT_TOKEN = '$VAULT_TOKEN'
+      VAULT_ADDR = "${VAULT_ADDR}"
+      VAULT_TOKEN = "${VAULT_TOKEN}"
       GOOGLE_CREDENTIALS = credentials('terraform-vault-sa-auth')
     }
     stages {

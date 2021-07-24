@@ -4,6 +4,7 @@ data "terraform_remote_state" "admin" {
   config = {
     bucket = "terraform-state-japneet-arctiq"
     prefix = "3a-create-dynamic-secrets"
+    credentials = "serviceaccount-auth.json"
   }
 }
 

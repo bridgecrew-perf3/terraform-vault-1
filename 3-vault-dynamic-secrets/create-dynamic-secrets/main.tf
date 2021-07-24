@@ -1,5 +1,5 @@
 resource "vault_aws_secret_backend" "aws" {
-  path       = "aws"
+  path                      = "aws"
   default_lease_ttl_seconds = "120"
   max_lease_ttl_seconds     = "240"
 }

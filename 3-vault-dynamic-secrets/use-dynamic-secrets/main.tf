@@ -2,8 +2,8 @@ data "terraform_remote_state" "admin" {
   backend = "gcs"
 
   config = {
-    bucket      = "terraform-state-japneet-arctiq"
-    prefix      = "3a-create-dynamic-secrets"
+    bucket = "terraform-state-japneet-arctiq"
+    prefix = "3a-create-dynamic-secrets"
   }
 }
 
@@ -21,7 +21,7 @@ provider "aws" {
 
 #Fetch latest amzn2 ami
 data "aws_ami" "ami" {
-  owners = ["amazon"]
+  owners      = ["amazon"]
   most_recent = true
 
   filter {
@@ -36,6 +36,6 @@ resource "aws_instance" "test" {
   instance_type = "t2.nano"
 
   tags = {
-    Name  = test
+    Name = "test"
   }
 }

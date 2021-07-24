@@ -54,5 +54,5 @@ gsutil mb --pap=enforced -b on gs://$GCS_TF_BUCKET_NAME
     - Before *terraform apply*, the user is requested with input to further proceed or not.
 
 ### Terraform Outputs
-gke_cluster_name = "japneet-demo-cluster"
-region = "us-central1"
+- gke_cluster_name = "japneet-demo-cluster"
+- region = "us-central1"

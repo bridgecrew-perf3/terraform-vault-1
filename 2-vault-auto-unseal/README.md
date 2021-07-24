@@ -2,7 +2,7 @@
 ## Setup Vault using aut-unseal capability
 
 - The setup fetches cluster credentials from GKE cluster created in first task.
-- GCP KMS is used for auto-unseal capabilities which requires key rings and key to be configured before hand.
+- GCP KMS is used for auto-unseal capabilities.
 - GCS is used as HA storage for vault.
 - HELM is used for vault deployment.
 - Vault is HA enabled with one active and 2 standby nodes.
@@ -43,8 +43,10 @@ gcloud kms keys add-iam-policy-binding \
     - You are all set, just click on "Build Now"
 
 ### Vault Deployment
-Vault is deployed using HELM. ALl the required configurations
+Vault is deployed using HELM. All the required configurations are stored in vault-values.yml
+```bash 
 helm upgrade --install vault hashicorp/vault -f vault-values.yml
+```
 
 ### Output
 ```bash

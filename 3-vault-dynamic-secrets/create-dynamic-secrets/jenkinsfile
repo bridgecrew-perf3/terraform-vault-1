@@ -1,0 +1,49 @@
+pipeline {
+  agent any
+  environment {
+      VAULT_ADDR = $VAULT_ADDR 
+      VAULT_TOKEN = $VAULT_TOKEN
+    }
+    stages {
+
+    stage('TF Init') {
+      steps {
+        dir('3-vault-dynmic-secrets/create-dynamic-secrets') {
+          withAWS(credentials: 'japneet-iam') {
+            sh 'terraform init'
+            sh 'terraform validate'
+          }
+        }  
+      }
+    }
+
+    stage('TF Plan') {
+      steps {
+        dir('3-vault-dynmic-secrets/create-dynamic-secrets') {
+          withAWS(credentials: 'japneet-iam') {
+            sh 'terraform state list'
+            sh 'terraform plan -out myplan'
+          }
+        }  
+      }
+    }
+
+    stage('Approval') {
+      steps {
+        script {
+          def userInput = input(id: 'confirm', message: 'Apply Terraform?', parameters: [ [$class: 'BooleanParameterDefinition', defaultValue: false, description: 'Apply terraform', name: 'confirm'] ])
+        }
+      }
+    }
+
+    stage('TF Apply') {
+      steps {
+        dir('3-vault-dynmic-secrets/create-dynamic-secrets') {
+          withAWS(credentials: 'japneet-iam') {
+            sh 'terraform apply -input=false myplan'
+          }
+        }  
+      }
+    }
+  }
+}

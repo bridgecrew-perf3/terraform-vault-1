@@ -1,25 +1,12 @@
-terraform {
-  backend "gcs" {
-    credentials = "serviceaccount-auth.json"
-    bucket      = "terraform-state-japneet-arctiq"
-    prefix      = "3a-create-dynamic-secrets"
-  }
-}
-
-provider "vault" {}
-
 resource "vault_aws_secret_backend" "aws" {
-  access_key = var.aws_access_key
-  secret_key = var.aws_secret_key
-  path       = "${var.name}-path"
-
+  path       = "aws"
   default_lease_ttl_seconds = "120"
   max_lease_ttl_seconds     = "240"
 }
 
-resource "vault_aws_secret_backend_role" "admin" {
+resource "vault_aws_secret_backend_role" "terraform" {
   backend         = vault_aws_secret_backend.aws.path
-  name            = "${var.name}-role"
+  name            = "terraform-role"
   credential_type = "iam_user"
 
   policy_document = <<EOF
@@ -27,21 +14,18 @@ resource "vault_aws_secret_backend_role" "admin" {
   "Version": "2012-10-17",
   "Statement": [
     {
+      "Sid": "Stmt1627134424890",
+      "Action": "ec2:*",
       "Effect": "Allow",
-      "Action": [
-        "iam:*", "ec2:*"
-      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "Stmt1627134533434",
+      "Action": "s3:*",
+      "Effect": "Allow",
       "Resource": "*"
     }
   ]
 }
 EOF
-}
-
-output "backend" {
-  value = vault_aws_secret_backend.aws.path
-}
-
-output "role" {
-  value = vault_aws_secret_backend_role.admin.name
 }

@@ -3,6 +3,7 @@ pipeline {
   environment {
       VAULT_ADDR = $VAULT_ADDR 
       VAULT_TOKEN = $VAULT_TOKEN
+      GOOGLE_CREDENTIALS = credentials('terraform-vault-sa-auth')
     }
     stages {
 
@@ -10,6 +11,7 @@ pipeline {
       steps {
         dir('3-vault-dynmic-secrets/create-dynamic-secrets') {
           withAWS(credentials: 'japneet-iam') {
+            sh 'echo $GOOGLE_CREDENTIALS | base64 -di > serviceaccount-auth.json'
             sh 'terraform init'
             sh 'terraform validate'
           }

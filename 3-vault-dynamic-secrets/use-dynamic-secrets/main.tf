@@ -29,4 +29,8 @@ resource "aws_instance" "test" {
   tags = {
     Name = "test"
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }

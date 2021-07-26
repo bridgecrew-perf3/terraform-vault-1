@@ -16,11 +16,6 @@ resource "vault_aws_secret_backend_role" "terraform" {
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Action": "ec2:*",
-      "Effect": "Allow",
-      "Resource": "*"
-    },
-    {
       "Action": "s3:*",
       "Effect": "Allow",
       "Resource": "*"
